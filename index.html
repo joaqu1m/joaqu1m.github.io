@@ -4,11 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
     <title>joaqu1m</title>
 </head>
 <body>
-    Minha página html
-
-    <button onclick="alert('opa')">coisar</button>
+    <div class="main">
+        <div id="movingText">
+            joaquim teste joaquim
+            <br>
+            joaquim teste joaquim
+            <br>
+            joaquim teste joaquim
+            <br>
+            joaquim teste joaquim
+            <br>
+        </div>
+        <div id="movingTextPlaceholder"></div>
+    </div>
+    <div class="coisado"></div>
 </body>
 </html>
+<script>
+    window.addEventListener("resize", () => {
+        console.log(`1:${(window.innerHeight / window.innerWidth).toFixed(2)}`)
+    })
+
+    movingTextPlaceholder.addEventListener("mousemove", (e) => {
+
+        const maximumPercent = {
+            x: 45,
+            y: 30
+        }
+
+        const parentSize = {
+            x: movingTextPlaceholder.offsetWidth,
+            y: movingTextPlaceholder.offsetHeight
+        }
+
+        const cursorCoords = {
+            x: e.offsetX,
+            y: e.offsetY
+        }
+
+        movingText.style.transform = `
+        rotateX(${((((cursorCoords.y - (parentSize.y/2))/(parentSize.y/100))/100)*maximumPercent.y).toFixed(2)}deg)
+        rotateY(${(((((cursorCoords.x - (parentSize.x/2))/(parentSize.x/100))/100)*maximumPercent.x) * -1).toFixed(2)}deg)`
+    })
+</script>
