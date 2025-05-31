@@ -16,3 +16,7 @@ params:
       url: "https://github.com/joaqu1m"
     - name: "LinkedIn"
       url: "https://br.linkedin.com/in/joaqu1m"
+
+caches:
+  images:
+    dir: :cacheDir/images
