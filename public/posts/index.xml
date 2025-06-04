@@ -6,21 +6,16 @@
     <description>Recent content in Posts on Joaquim Pires</description>
     <generator>Hugo -- 0.147.6</generator>
     <language>pt-br</language>
-    <lastBuildDate>Sat, 31 May 2025 03:31:58 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 02 Jun 2025 20:58:02 -0300</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Meu primeiro post</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
-      <pubDate>Sat, 31 May 2025 03:31:58 +0000</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
-      <description>&lt;h1 id=&#34;meu-primeiro-post&#34;&gt;Meu primeiro post&lt;/h1&gt;
-&lt;p&gt;Introdução&lt;/p&gt;
-&lt;h2 id=&#34;teste-de-conteúdo-do-post&#34;&gt;Teste de conteúdo do post&lt;/h2&gt;
-&lt;p&gt;Blablabla&lt;/p&gt;
-&lt;h3 id=&#34;este-é-o-conteúdo-do-meu-primeiro-post&#34;&gt;Este é o conteúdo do meu primeiro post&lt;/h3&gt;
-&lt;p&gt;Testando markdown&lt;/p&gt;
-&lt;h4 id=&#34;este-é-um-teste-de-conteúdo-do-post&#34;&gt;Este é um teste de conteúdo do post&lt;/h4&gt;
-&lt;p&gt;Mais um teste de conteúdo do post&lt;/p&gt;</description>
+      <title>Explorando o Databricks: Um Projeto Prático com Dados de Criptomoedas</title>
+      <link>http://localhost:1313/posts/databricks-labs/</link>
+      <pubDate>Mon, 02 Jun 2025 20:58:02 -0300</pubDate>
+      <guid>http://localhost:1313/posts/databricks-labs/</guid>
+      <description>&lt;p&gt;Olá!&lt;/p&gt;
+&lt;p&gt;Recentemente, durante um final de semana produtivo, tive a oportunidade de explorar a ferramenta &lt;strong&gt;Databricks&lt;/strong&gt;. Isso foi possível através de um laboratório de cinco dias oferecido pela própria Databricks, financiado pela minha empresa atual. Além de realizar os exercícios propostos no curso, decidi utilizar o ambiente para desenvolver um projeto pessoal completo, desde a ingestão dos dados até a construção de um painel de visualização.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Mas afinal, o que é o Databricks?&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
