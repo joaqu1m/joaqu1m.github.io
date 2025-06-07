@@ -6,16 +6,16 @@
     <description>Recent content on Joaquim Pires</description>
     <generator>Hugo -- 0.147.6</generator>
     <language>pt-br</language>
-    <lastBuildDate>Mon, 02 Jun 2025 20:58:02 -0300</lastBuildDate>
+    <lastBuildDate>Sat, 07 Jun 2025 19:27:00 -0300</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Explorando o Databricks: Um Projeto Prático com Dados de Criptomoedas</title>
-      <link>http://localhost:1313/posts/databricks-labs/</link>
-      <pubDate>Mon, 02 Jun 2025 20:58:02 -0300</pubDate>
-      <guid>http://localhost:1313/posts/databricks-labs/</guid>
-      <description>&lt;p&gt;Olá!&lt;/p&gt;
-&lt;p&gt;Recentemente, durante um final de semana produtivo, tive a oportunidade de explorar a ferramenta &lt;strong&gt;Databricks&lt;/strong&gt;. Isso foi possível através de um laboratório de cinco dias oferecido pela própria Databricks, financiado pela minha empresa atual. Além de realizar os exercícios propostos no curso, decidi utilizar o ambiente para desenvolver um projeto pessoal completo, desde a ingestão dos dados até a construção de um painel de visualização.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Mas afinal, o que é o Databricks?&lt;/strong&gt;&lt;/p&gt;</description>
+      <title>Experimentando o Databricks</title>
+      <link>http://localhost:1313/posts/databricks-lab/</link>
+      <pubDate>Sat, 07 Jun 2025 19:27:00 -0300</pubDate>
+      <guid>http://localhost:1313/posts/databricks-lab/</guid>
+      <description>&lt;p&gt;Opa!&lt;/p&gt;
+&lt;p&gt;Recentemente, durante um final de semana, tive a oportunidade de explorar a ferramenta &lt;strong&gt;Databricks&lt;/strong&gt;. Isso foi possível através de um laboratório de cinco dias oferecido pela própria Databricks, em um curso financiado pela minha empresa atual. Além de realizar os exercícios propostos no curso, decidi utilizar o ambiente para desenvolver um projeto pessoal completo, desde a ingestão dos dados até a construção de um painel de visualização.&lt;/p&gt;
+&lt;p&gt;Todo o código do projeto está disponível &lt;a href=&#34;https://github.com/joaqu1m/databricks-labs&#34;&gt;nesse repositório&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Experimentando o Databricks | Joaquim Pires</title>
+<meta name="keywords" content="">
+<meta name="description" content="Opa!
+Recentemente, durante um final de semana, tive a oportunidade de explorar a ferramenta Databricks. Isso foi possível através de um laboratório de cinco dias oferecido pela própria Databricks, em um curso financiado pela minha empresa atual. Além de realizar os exercícios propostos no curso, decidi utilizar o ambiente para desenvolver um projeto pessoal completo, desde a ingestão dos dados até a construção de um painel de visualização.
+Todo o código do projeto está disponível nesse repositório.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/databricks-lab/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/databricks-lab/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class=" dark" id="top">
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Joaquim Pires (Alt + H)">Joaquim Pires</a>
+            <div class="logo-switches">
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Experimentando o Databricks
+    </h1>
+    <div class="post-meta"><span title='2025-06-07 19:27:00 -0300 -03'>June 7, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>Opa!</p>
+<p>Recentemente, durante um final de semana, tive a oportunidade de explorar a ferramenta <strong>Databricks</strong>. Isso foi possível através de um laboratório de cinco dias oferecido pela própria Databricks, em um curso financiado pela minha empresa atual. Além de realizar os exercícios propostos no curso, decidi utilizar o ambiente para desenvolver um projeto pessoal completo, desde a ingestão dos dados até a construção de um painel de visualização.</p>
+<p>Todo o código do projeto está disponível <a href="https://github.com/joaqu1m/databricks-labs">nesse repositório</a>.</p>
+<h3 id="vou-começar-explicando-o-que-é-o-databricks-na-minha-visão">Vou começar explicando o que é o Databricks, na minha visão<a hidden class="anchor" aria-hidden="true" href="#vou-começar-explicando-o-que-é-o-databricks-na-minha-visão">#</a></h3>
+<p>De forma direta, o Databricks é uma <strong>plataforma unificada de análise de dados</strong>, construída sobre o Apache Spark. Gosto de pensar nele como uma central abrangente para o ciclo de vida dos dados, uma plataforma que ajuda mais na <strong>governança</strong> do que qualquer outra coisa. É um ambiente colaborativo onde cientistas de dados, engenheiros e analistas de negócios podem trabalhar juntos em todas as etapas: desde a coleta e tratamento dos dados brutos, passando pela construção de modelos de Machine Learning, até a criação de relatórios e visualizações.</p>
+<p>Como alguém que, apesar de não ter tanta experiência, já conseguiu experimentar a área de dados, fiquei impressionado com a quantidade de ferramentas e funcionalidades que o Databricks consegue <strong>unificar</strong> em uma única plataforma. Neste post, quero compartilhar um pouco dessa experiência, mostrando como cada etapa do meu projeto foi implementada utilizando a plataforma.</p>
+<p><strong>Uma observação sobre o ambiente do laboratório:</strong> O Databricks é uma plataforma robusta e, naturalmente, possui custos (altíssimos) associados. O ambiente do laboratório que utilizei, por ser focado em aprendizado, tinha algumas limitações de recursos. Por exemplo, não tive acesso às <strong>SQL Warehouses</strong> (mais orientadas para análises com SQL e ferramentas de Business Intelligence), mas pude explorar bastante os <strong>Clusters</strong>. Estes são a unidade de computação do Databricks ideal para processamento de dados em larga escala com Spark, e foram perfeitamente adequados para as necessidades do meu projeto.</p>
+<h2 id="a-proposta-do-projeto-uma-etl-de-criptomoedas-em-tempo-real">A Proposta do Projeto: Uma ETL de Criptomoedas em Tempo Real<a hidden class="anchor" aria-hidden="true" href="#a-proposta-do-projeto-uma-etl-de-criptomoedas-em-tempo-real">#</a></h2>
+<p>Então, qual era a proposta central do projeto? O objetivo era construir um fluxo de dados (um ETL: <strong>Extract, Transform, Load</strong>) completo. A intenção era capturar dados em tempo real, processá-los, transformá-los em informações úteis e, ao final, criar painéis (dashboards) para acompanhar os resultados.</p>
+<p>Na prática, o projeto foi dividido em três etapas principais, todas executadas no Databricks:</p>
+<ol>
+<li><strong>Ingestão dos Dados:</strong> Os dados foram capturados em tempo real a partir de um <em>socket</em> público da Binance. Esse <em>socket</em> fornecia o valor do índice de diversas criptomoedas em tempo real em um intervalo de 3 segundos.</li>
+<li><strong>Processamento e Transformação (Camadas Bronze, Silver e Gold):</strong> Com os dados brutos em mãos (o que é comumente chamado de camada <em>Bronze</em> pela arquitetura Medallion), iniciei o trabalho de limpeza e estruturação. Esses dados foram transformados para uma camada intermediária, mais organizada (camada <em>Silver</em>), e, finalmente, agregados e preparados para análise na camada <em>Gold</em>, pronta para consumo. Todo esse processamento ocorreu em <em>near-real-time</em>.</li>
+<li><strong>Visualização:</strong> Por fim, foram criados dashboards simples para o acompanhamento em tempo real de algumas criptomoedas específicas que selecionei, como Bitcoin, Ethereum e Dogecoin.</li>
+</ol>
+<p>Antes de detalhar cada uma dessas etapas, considero importante mencionar como o código foi organizado e o projeto estruturado. Vamos abordar um pouco sobre&hellip;</p>
+<h2 id="organização-do-projeto-integração-com-github-e-cicd">Organização do Projeto: Integração com GitHub e CI/CD<a hidden class="anchor" aria-hidden="true" href="#organização-do-projeto-integração-com-github-e-cicd">#</a></h2>
+<p>Um dos principais desafios práticos deste laboratório era o fato de que o ambiente era reiniciado a cada 4 horas, apagando todo o meu trabalho. Para resolver isso e garantir a organização do código, a integração do Databricks com o Git (neste caso, o GitHub) foi fundamental.</p>
+<p>Essa abordagem estende os benefícios clássicos do controle de versão para dentro do Databricks, permitindo um histórico claro de alterações, colaboração e rastreabilidade de todo o projeto.</p>
+<p>Para automatizar o processo de restauração e atualização do meu ambiente, criei dois workflows de CI/CD utilizando o GitHub Actions.</p>
+<hr>
+<h3 id="workflow-para-sincronização-de-jobs">Workflow para Sincronização de Jobs<a hidden class="anchor" aria-hidden="true" href="#workflow-para-sincronização-de-jobs">#</a></h3>
+<p>Para os Jobs do Databricks, utilizei a <a href="https://docs.databricks.com/api/workspace/jobs/create">API de Jobs 2.1</a> para criar e atualizar as definições no workspace.</p>
+<ul>
+<li><strong>Como funciona:</strong> O diretório <code>jobs</code> no meu repositório contém arquivos JSON que descrevem cada job, seguindo as regras da documentação oficial.</li>
+<li><strong>Gatilho:</strong> O workflow é acionado automaticamente sempre que um <em>push</em> é realizado neste diretório.</li>
+<li><strong>Ação:</strong> Ele atualiza os jobs correspondentes no Databricks com as novas configurações, um processo que não interfere em nenhuma execução que já esteja em andamento.</li>
+</ul>
+<h3 id="workflow-para-sincronização-de-notebooks">Workflow para Sincronização de Notebooks<a hidden class="anchor" aria-hidden="true" href="#workflow-para-sincronização-de-notebooks">#</a></h3>
+<p>Para os notebooks, o processo foi mais direto. Utilizei a <strong>CLI (Command-Line Interface) do Databricks</strong> para fazer o upload dos arquivos do meu repositório local diretamente para o workspace.</p>
+<ul>
+<li><strong>Como funciona:</strong> No Databricks, um notebook é essencialmente um arquivo fonte (com extensão <code>.py</code>, <code>.sql</code>, etc.). Uma característica interessante é que, mesmo em um notebook Python, por exemplo, é possível executar células em outras linguagens usando <strong>comandos mágicos</strong>, como <code>%sql</code> ou <code>%md</code> (para Markdown), no início da célula.</li>
+<li><strong>Ação:</strong> O workflow envia cada arquivo do diretório <code>notebooks</code> do repositório para o local correspondente no workspace do Databricks. Para que o upload via CLI funcione corretamente, é necessário especificar a linguagem padrão do notebook no comando de envio.</li>
+</ul>
+<p>Os diretórios mencionados possuem os seguintes arquivos:</p>
+<p><img alt="Repo Organization Example" loading="lazy" src="/databricks-lab-repo-example.png"></p>
+<h2 id="etapa-1-ingestão-em-tempo-real-para-a-camada-bronze">Etapa 1: Ingestão em Tempo Real para a Camada Bronze<a hidden class="anchor" aria-hidden="true" href="#etapa-1-ingestão-em-tempo-real-para-a-camada-bronze">#</a></h2>
+<p>Com o projeto organizado, a primeira etapa técnica foi a ingestão: o processo de capturar os dados brutos da fonte e salvá-los na plataforma. O objetivo aqui é simples: trazer os dados para dentro do nosso ambiente da forma mais fiel e confiável possível, criando a nossa Camada Bronze.</p>
+<p>Para este projeto, a fonte de dados era um WebSocket da Binance, que transmite em tempo real cada negócio agregado do par de moedas Bitcoin/Tether (BTCUSDT).</p>
+<h3 id="a-abordagem-lendo-o-stream-com-python-e-spark">A Abordagem: Lendo o Stream com Python e Spark<a hidden class="anchor" aria-hidden="true" href="#a-abordagem-lendo-o-stream-com-python-e-spark">#</a></h3>
+<p>O processo foi implementado em um notebook Databricks utilizando Python. Vamos ver os passos principais:</p>
+<ol>
+<li>
+<p><strong>Conexão e Estrutura (Schema):</strong></p>
+<p>O primeiro passo foi estabelecer a conexão com o WebSocket da Binance. Antes mesmo de receber os dados, defini um schema rígido com o <code>StructType</code> do PySpark. Isso é uma boa prática fundamental na engenharia de dados, pois garante que os dados que salvamos tenham sempre a estrutura e os tipos corretos (texto, número, data/hora), prevenindo erros e inconsistências no futuro. Além dos campos originais da fonte, adicionei alguns campos de metadados:</p>
+<ul>
+<li><code>received_timestamp</code>: A data e hora exatas em que o nosso processo recebeu o dado.</li>
+<li><code>interval_partition</code>: A data e hora da coleta, que será usada mais tarde para uma otimização da tabela.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>schema <span style="color:#f92672">=</span> StructType([
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;event_type&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),      
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;event_timestamp&#34;</span>, TimestampType(), <span style="color:#66d9ef">True</span>),  
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;symbol&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),          
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;mark_price&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;index_price&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),           
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;estimated_settle_price&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),             
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;funding_rate&#34;</span>, StringType(), <span style="color:#66d9ef">True</span>),    
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;next_funding_timestamp&#34;</span>, TimestampType(), <span style="color:#66d9ef">True</span>),     
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;received_timestamp&#34;</span>, TimestampType(), <span style="color:#66d9ef">True</span>),
+</span></span><span style="display:flex;"><span>    StructField(<span style="color:#e6db74">&#34;interval_partition&#34;</span>, TimestampType(), <span style="color:#66d9ef">True</span>),
+</span></span><span style="display:flex;"><span>])
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Processamento em Micro-lotes (Micro-batches):</strong></p>
+<p>Receber dados de um stream significa um fluxo constante de informações, uma por uma. Gravar cada registro individualmente no disco seria extremamente ineficiente e criaria um problema conhecido como &ldquo;small files&rdquo; (muitos arquivos pequenos), que degrada a performance de sistemas distribuídos como o Spark.</p>
+<p>Para resolver isso, implementei uma lógica de buffer. O código coleta os registros em uma lista na memória e, somente quando atinge um tamanho pré-definido (um lote de 100 registros), ele converte essa lista em um DataFrame Spark e o salva de uma vez. Essa abordagem de micro-lotes é muito mais eficiente.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>BATCH_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">10_000</span> <span style="color:#75715e"># Esse tamanho de lote faz com que as inserções na bronze aconteçam a cada 3 minutos, aproximadamente</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">with</span> websockets<span style="color:#f92672">.</span>connect(url) <span style="color:#66d9ef">as</span> ws:
+</span></span><span style="display:flex;"><span>    buffer <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> ws<span style="color:#f92672">.</span>recv() <span style="color:#75715e"># Recebe uma iteração do stream da binance</span>
+</span></span><span style="display:flex;"><span>        parsed_array <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> parsed_array:
+</span></span><span style="display:flex;"><span>            row <span style="color:#f92672">=</span> parse_data(item) <span style="color:#75715e"># Formata os dados para o schema definido</span>
+</span></span><span style="display:flex;"><span>            buffer<span style="color:#f92672">.</span>append(row)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(buffer) <span style="color:#f92672">&gt;=</span> BATCH_SIZE:
+</span></span><span style="display:flex;"><span>            df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>createDataFrame(buffer, schema<span style="color:#f92672">=</span>schema)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            df<span style="color:#f92672">.</span>write<span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#34;delta&#34;</span>) \
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">.</span>mode(<span style="color:#e6db74">&#34;append&#34;</span>) \
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">.</span>partitionBy(<span style="color:#e6db74">&#34;interval_partition&#34;</span>) \
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">.</span>saveAsTable(<span style="color:#e6db74">&#34;bronze_binance_mark_price&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            buffer <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>datetime<span style="color:#f92672">.</span>now(pytz<span style="color:#f92672">.</span>utc)<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H:%M:%S&#39;</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74"> Batch saved with </span><span style="color:#e6db74">{</span>BATCH_SIZE<span style="color:#e6db74">}</span><span style="color:#e6db74"> records&#34;</span>)
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Salvando na Tabela Bronze com Delta Lake:</strong></p>
+<p>Este é o ponto central da etapa de ingestão. O lote de dados não foi salvo em um arquivo CSV, JSON ou Parquet qualquer, mas sim em uma tabela no formato Delta Lake.</p>
+<p>O Delta Lake é uma camada de armazenamento <em>(de código aberto :D)</em> que traz confiabilidade e performance aos data lakes. Na prática, ele adiciona funcionalidades de um banco de dados transacional (como transações ACID) sobre os arquivos do nosso data lake. Ao usar <code>.format(&quot;delta&quot;)</code>, garantimos que cada escrita ou é concluída com sucesso, ou falha sem deixar dados corrompidos.</p>
+<p>Além disso, ao salvar, utilizei <code>.partitionBy(&quot;interval_partition&quot;)</code>. Isso instrui o Databricks a organizar fisicamente os dados em pastas separadas por data e hora (sem minutos, segundos e microsegundos). Esse particionamento é uma técnica de otimização que torna as consultas filtradas por data (por exemplo, &ldquo;analisar todos os dados de ontem às 23h&rdquo;) drasticamente mais rápidas.</p>
+</li>
+</ol>
+<p>Ao final deste processo, tínhamos uma tabela chamada <code>bronze_binance_mark_price</code> sendo alimentada continuamente. Essa tabela representa a nossa &ldquo;fonte única da verdade&rdquo; para os dados brutos, pronta para ser consumida pela próxima etapa: a limpeza e transformação para a Camada Silver.</p>
+<p>Também é importante mencionar que, para garantir a continuidade do processo, o notebook foi configurado como um <strong>Job</strong> no Databricks. Normalmente, isso significaria que ele seria executado automaticamente em intervalos regulares, mas nesse caso, onde precisamos manter o Stream ligado à fonte, o Job foi configurado para rodar continuamente. Uma configuração foi criada em <code>jobs/binance_mark_prices_ingestion.json</code>, um job com uma task:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Binance Mark Prices Ingestion&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;existing_cluster_id&#34;</span>: <span style="color:#e6db74">&#34;0527-020929-w1o58jct&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;notebook_task&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;notebook_path&#34;</span>: <span style="color:#e6db74">&#34;/Shared/Git/bronze_binance_mark_price_stream_ingestion.py&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;max_retries&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;timeout_seconds&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;max_concurrent_runs&#34;</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>E que pode ser visualizado pela interface do Databricks, como no seguinte exemplo:</p>
+<p><img alt="Ingestion Notebook Run Example" loading="lazy" src="/databricks-lab-ingestion-notebook-example.png"></p>
+<p><em>Se reparar bem, vai perceber que o job está rodando há mais de 1 horas, o que significa que ele está ativo e recebendo dados continuamente.</em></p>
+<h2 id="etapa-2-refinando-os-dados-com-as-camadas-silver-e-gold">Etapa 2: Refinando os Dados com as Camadas Silver e Gold<a hidden class="anchor" aria-hidden="true" href="#etapa-2-refinando-os-dados-com-as-camadas-silver-e-gold">#</a></h2>
+<p>Com os dados brutos chegando continuamente na nossa camada <strong>Bronze</strong>, o próximo passo é transformá-los em algo realmente útil. É aqui que entram as camadas <strong>Silver</strong> (Prata) e <strong>Gold</strong> (Ouro) da nossa arquitetura. A meta é simples:</p>
+<ul>
+<li><strong>Silver</strong>: Limpar, filtrar e agregar os dados brutos.</li>
+<li><strong>Gold</strong>: Enriquecer e modelar os dados para responder a perguntas de negócio específicas, deixando-os prontos para análise e visualização.</li>
+</ul>
+<h3 id="orquestrando-o-fluxo-com-databricks-jobs">Orquestrando o Fluxo com Databricks Jobs<a hidden class="anchor" aria-hidden="true" href="#orquestrando-o-fluxo-com-databricks-jobs">#</a></h3>
+<p>Todo esse processo de transformação não é manual. Eu o automatizei usando mais um Job, que, dessa vez, é uma forma de agendar e executar notebooks ou scripts de forma recorrente. O Job foi definido em um arquivo JSON e configurado para rodar a cada 5 minutos, mantendo nossos dados sempre atualizados.</p>
+<p>O mais importante é que o Job define uma dependência: a tarefa da camada Gold só começa depois que a tarefa da Silver é concluída com sucesso. Isso garante a integridade e a consistência do nosso fluxo de dados.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tasks&#34;</span>: [
+</span></span><span style="display:flex;"><span>        { <span style="color:#f92672">&#34;task_key&#34;</span>: <span style="color:#e6db74">&#34;Silver&#34;</span>, <span style="color:#f92672">&#34;...&#34;</span> },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;task_key&#34;</span>: <span style="color:#e6db74">&#34;Gold_By_Symbol&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Define a dependência da tarefa Silver
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#f92672">&#34;depends_on&#34;</span>: [
+</span></span><span style="display:flex;"><span>                { <span style="color:#f92672">&#34;task_key&#34;</span>: <span style="color:#e6db74">&#34;Silver&#34;</span> }
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;...&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;schedule&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;quartz_cron_expression&#34;</span>: <span style="color:#e6db74">&#34;0 0/5 * ? * *&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;timezone_id&#34;</span>: <span style="color:#e6db74">&#34;America/Sao_Paulo&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>É muito interessante observar na interface do Databricks como os Jobs são executados em sequência, pois é uma visualização MUITO parecida com o que vemos em ferramentas de orquestração de workflows, como o <strong>Apache Airflow</strong>. Isso facilita muito a compreensão do fluxo de dados e a depuração de problemas.</p>
+<p><img alt="Workflow Viz" loading="lazy" src="/databricks-lab-etl-workflow.png"></p>
+<h3 id="da-bronze-para-a-silver-limpeza-e-agregação">Da Bronze para a Silver: Limpeza e Agregação<a hidden class="anchor" aria-hidden="true" href="#da-bronze-para-a-silver-limpeza-e-agregação">#</a></h3>
+<p>A primeira transformação pega os dados brutos da tabela Bronze e os refina. O script SQL para esta etapa realiza duas tarefas principais:</p>
+<ul>
+<li>Agregação por Minuto: Os dados chegam várias vezes por segundo. Para uma análise mais clara, eu os agrupei para ter o preço médio por minuto de cada criptomoeda.</li>
+<li>Operação MERGE: Em vez de apagar e inserir dados, utilizei o comando MERGE. Ele é uma espécie de &ldquo;upsert&rdquo; inteligente: se um registro para um determinado minuto e símbolo já existe, ele o atualiza; se não existe, ele o insere. Isso torna a operação eficiente e idempotente (pode ser executada várias vezes sem gerar duplicatas).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Simplificação da query principal da camada Silver
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MERGE <span style="color:#66d9ef">INTO</span> silver_binance_mark_price <span style="color:#66d9ef">AS</span> T
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">USING</span> (
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">SELECT</span>
+</span></span><span style="display:flex;"><span>    date_trunc(<span style="color:#e6db74">&#39;MINUTE&#39;</span>, event_timestamp) <span style="color:#66d9ef">AS</span> <span style="color:#f92672">`</span>date<span style="color:#f92672">`</span>,
+</span></span><span style="display:flex;"><span>    date_trunc(<span style="color:#e6db74">&#39;HOUR&#39;</span>, event_timestamp) <span style="color:#66d9ef">AS</span> partition_interval,
+</span></span><span style="display:flex;"><span>    symbol,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">avg</span>(<span style="color:#66d9ef">cast</span>(index_price <span style="color:#66d9ef">AS</span> DECIMAL(<span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">8</span>))) <span style="color:#66d9ef">AS</span> index_price <span style="color:#75715e">-- Agrega o preço por minuto
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">FROM</span>
+</span></span><span style="display:flex;"><span>    bronze_binance_mark_price
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">WHERE</span>
+</span></span><span style="display:flex;"><span>    received_timestamp <span style="color:#f92672">&gt;=</span> now() <span style="color:#f92672">-</span> INTERVAL <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">MINUTE</span> <span style="color:#75715e">-- Processa apenas dados recentes, já que roda a cada 5 minutos
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#66d9ef">ALL</span>
+</span></span><span style="display:flex;"><span>) <span style="color:#66d9ef">AS</span> S
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> T.<span style="color:#f92672">`</span>date<span style="color:#f92672">`</span> <span style="color:#f92672">=</span> S.<span style="color:#f92672">`</span>date<span style="color:#f92672">`</span> <span style="color:#66d9ef">AND</span> T.symbol <span style="color:#f92672">=</span> S.symbol <span style="color:#66d9ef">AND</span> T.partition_interval <span style="color:#f92672">=</span> S.partition_interval
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHEN</span> MATCHED <span style="color:#66d9ef">THEN</span> <span style="color:#66d9ef">UPDATE</span> <span style="color:#66d9ef">SET</span> ...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHEN</span> <span style="color:#66d9ef">NOT</span> MATCHED <span style="color:#66d9ef">THEN</span> <span style="color:#66d9ef">INSERT</span> ...
+</span></span></code></pre></div><h3 id="da-silver-para-a-gold-preenchendo-lacunas-para-análise">Da Silver para a Gold: Preenchendo Lacunas para Análise<a hidden class="anchor" aria-hidden="true" href="#da-silver-para-a-gold-preenchendo-lacunas-para-análise">#</a></h3>
+<p>A camada Gold é onde preparamos os dados para o consumo final. Um problema comum em dados de streaming é que podem existir lacunas. Por exemplo, uma moeda menos popular pode não ter tido negociações em um determinado minuto. Um gráfico com buracos não é ideal.</p>
+<p>O objetivo da query da camada Gold é justamente resolver isso. A lógica é um pouco mais complexa:</p>
+<ul>
+<li><strong>Criação de um &ldquo;Gabarito&rdquo;:</strong> Primeiro, o script cria uma grade perfeita com todos os minutos dos últimos instantes e cruza essa informação com todos os símbolos de moedas existentes.</li>
+<li><strong>Preenchimento de Lacunas:</strong> Em seguida, ele utiliza uma função de janela (LAST(&hellip;, TRUE) OVER (&hellip;)) para preencher os minutos em que não houve negociação para uma moeda, repetindo o último preço válido conhecido para ela.</li>
+</ul>
+<p>O resultado é uma tabela gold limpa, completa e sem falhas na série temporal, perfeita para ser usada em dashboards.</p>
+<p>A query SQL que faz toda essa implementação é bem extensa e tem 6 diferentes <strong>CTEs</strong>, mas caso esteja interessado, a mesma pode ser acessada <a href="https://github.com/joaqu1m/databricks-labs/blob/main/notebooks/gold_binance_mark_price_by_symbol_merge.sql">aqui</a>.</p>
+<h2 id="etapa-3-visualizando-os-resultados">Etapa 3: Visualizando os Resultados<a hidden class="anchor" aria-hidden="true" href="#etapa-3-visualizando-os-resultados">#</a></h2>
+<p>Com os dados na camada Gold, o trabalho pesado de engenharia de dados está concluído. A etapa final é a mais simples gratificante: visualizar os resultados.</p>
+<p>A tabela Gold, com seus dados limpos e sem lacunas, serve como a fonte de dados perfeita para os gráficos. Utilizando as ferramentas nativas de visualização do Databricks, pude criar um notebook com uma dashboard embarcada, a alternativa que eu tive nesse lab onde apenas clusters (e não warehouses) estavam disponívels.</p>
+<p>Criei gráficos de linha para acompanhar a flutuação do preço de 4 das principais moedas (Bitcoin, Ethereum, etc.) ao longo do tempo. Ver a atualização dos gráficos ao longo do tempo foi a prova final de que nosso pipeline de dados de ponta a ponta estava funcionando perfeitamente, transformando dados brutos de um stream em insights visuais e acionáveis.</p>
+<p>Segue um exemplo de como ficou esse protótipo de dashboard:</p>
+<p><img alt="Dashboard Example" loading="lazy" src="/databricks-lab-dashboard-example.png"></p>
+<p>Cada um desses gráficos é alimentado diretamente pela tabela Gold, que é atualizada a cada 5 minutos. Isso significa que, sempre que um novo lote de dados é processado, os gráficos refletem imediatamente os últimos 60 minutos disponíveis.</p>
+<p>A criação de dashboards no Databricks é bastante intuitiva. Ela se assemelha a outras ferramentas de visualização, como o Tableau ou o Power BI, mas com a vantagem de estar totalmente integrada ao ambiente de dados. Isso permite que cientistas de dados e engenheiros criem visualizações diretamente a partir dos notebooks, sem precisar exportar os dados para fora da plataforma.</p>
+<p>Com base em experiências pessoais (meu próprio uso e conversas com colaboradores), as dashboards do Databricks ainda parecem um pouco mais limitadas em comparação com ferramentas dedicadas de BI, como o Tableau. No entanto, vale lembrar que a plataforma Databricks está em constante evolução, e novas funcionalidades são frequentemente adicionadas. Além disso, a integração com outras ferramentas de visualização é sempre uma opção.</p>
+<p>Explorar o Databricks foi uma experiência muito interessante. A plataforma realmente brilha quando se trata de unificar o ciclo de vida dos dados, desde a ingestão até a visualização. A capacidade de trabalhar com grandes volumes de dados em tempo real, combinada com a facilidade de uso e as ferramentas colaborativas, torna o Databricks uma grande escolha para projetos de ciência de dados e engenharia. Já fazia um tempo que eu queria explorar mais a fundo essa plataforma, e essa oportunidade de laboratório foi perfeita para isso.</p>
+<p>Obrigado por ler até aqui! Espero que este post tenha agregado tanto valor para você quanto agregou para mim. Se você tiver alguma dúvida ou quiser discutir mais sobre o assunto, fique à vontade para entrar em contato!</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Joaquim Pires</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+</body>
+
+</html>
