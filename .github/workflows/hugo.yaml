@@ -79,6 +79,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Adds CNAME file
+        run: echo 'joaqu1m.com' > ./dist/CNAME
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
